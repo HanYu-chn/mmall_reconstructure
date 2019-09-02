@@ -22,6 +22,6 @@ public class Const {
 
     public class Role {
         public static final int ROLE_CUSTOMER = 0;
-        public static final int ROLE_ROOT = 1;
+        public static final int ROLE_ADMIN = 1;
     }
 }

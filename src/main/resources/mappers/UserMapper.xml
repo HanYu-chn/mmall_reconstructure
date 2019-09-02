@@ -157,11 +157,40 @@
   <select id="checkEmail" parameterType="string" resultType="int">
     select count(*) from mmall_user where email = #{email}
   </select>
+
   <select id="selectLogin" parameterType="map" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from mmall_user
     where username = #{userName}
     and password = #{password}
+  </select>
+
+  <select id="selectQuestion" parameterType="string" resultType="string">
+    select question from mmall_user where username=#{userName}
+  </select>
+
+  <select id="checkAnswer" parameterType="map" resultType="int">
+    select count(*)
+    from mmall_user
+    where username=#{userName} and question=#{question} and answer=#{answer}
+  </select>
+
+  <update id="updatePasswordByUserName" parameterType="map">
+    update mmall_user
+    set password=#{password},update_time = now()
+    where userName=#{userName}
+  </update>
+
+  <select id="checkPassword" parameterType="map" resultType="int">
+    select count(*)
+    from mmall_user
+    where id=#{userId} and password=#{password}
+  </select>
+
+  <select id="checkEmailOccupiedByUserId" parameterType="map" resultType="int">
+    select count(*)
+    from mmall_user
+    where email = #{email} and id != #{userId}
   </select>
 </mapper>
