@@ -7,6 +7,10 @@
  */
 package com.mmall.common;
 
+import com.google.common.collect.Sets;
+
+import java.util.Set;
+
 /**
  * @version: V1.0
  * @author: HanYu
@@ -20,8 +24,33 @@ public class Const {
     public static final String USERNAME = "userName";
     public static final String EMAIL = "email";
 
-    public class Role {
-        public static final int ROLE_CUSTOMER = 0;
-        public static final int ROLE_ADMIN = 1;
+    public interface Role {
+        int ROLE_CUSTOMER = 0;
+        int ROLE_ADMIN = 1;
+    }
+
+    public interface ProductListOrderBy {
+        Set<String> PRICE_ASC_DESC = Sets.newHashSet("price_asc", "price_desc");
+    }
+
+    public enum ProductStatusEnum {
+        ON_SALE("在售", 1),
+        OFF_SALE("下线", 0);
+
+        private String value;
+        private int code;
+
+        ProductStatusEnum(String value, int code) {
+            this.value = value;
+            this.code = code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public int getCode() {
+            return code;
+        }
     }
 }

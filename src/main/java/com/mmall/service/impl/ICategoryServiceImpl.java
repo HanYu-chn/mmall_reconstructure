@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -84,7 +85,7 @@ public class ICategoryServiceImpl implements ICategoryService {
 
     /*---------------------------------------分割线-----------------------------------------**/
     @Override
-    public ServerResponse<Set<Category>> getChildrenParallelAndDeepCategory(Integer categoryId) {
+    public ServerResponse<List<Integer>> getChildrenParallelAndDeepCategory(Integer categoryId) {
         if (categoryId == null) return ServerResponse.createByError("获取子类参数错误");
         Set<Category> set = new HashSet<>();
         findCategory(set,categoryId);
@@ -92,7 +93,11 @@ public class ICategoryServiceImpl implements ICategoryService {
             logger.info("未找到该分类的子类");
             return ServerResponse.createByError("未找到该分类的子类");
         }
-        return ServerResponse.createBySuccess(set);
+        List<Integer> list = new ArrayList<>();
+        for (Category category : set) {
+            list.add(category.getId());
+        }
+        return ServerResponse.createBySuccess(list);
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
