@@ -6,5 +6,10 @@
     <input type="file" name="uploadFile">
     <input type="submit">
 </form>
+
+<form name="form2" action="/manage/product/richTextImgUpload.do" method="post"  enctype="multipart/form-data">
+    <input type="file" name="uploadFile">
+    <input type="submit" value="upload"/>
+</form>
 </body>
 </html>

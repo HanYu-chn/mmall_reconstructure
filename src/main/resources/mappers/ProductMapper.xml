@@ -187,6 +187,7 @@
   <select id="selectListByNameAndId" resultMap="BaseResultMap" parameterType="map">
     select
     <include refid="Base_Column_List"/>
+    from mmall_product
     <where>
       <if test="productName != null">
         and name like #{productName}
