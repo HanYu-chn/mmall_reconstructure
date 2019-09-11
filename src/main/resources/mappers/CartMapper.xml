@@ -139,7 +139,7 @@
     delete from mmall_cart
     where user_id = #{userId}
     <if test="productIdList != null">
-      product_id in 
+      and product_id in
       <foreach collection="productIdList" item="item" open="(" separator="," close=")">
         #{item}
       </foreach>

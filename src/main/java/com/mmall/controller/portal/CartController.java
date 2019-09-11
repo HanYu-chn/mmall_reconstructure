@@ -112,7 +112,7 @@ public class CartController {
     /*---------------------------------------分割线-----------------------------------------**/
     @RequestMapping(value = "getCartProductNum.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<Integer> getCartProductNum(HttpSession session, Integer productId) {
+    public ServerResponse<Integer> getCartProductNum(HttpSession session) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createBySuccess(0);
         return iCartService.getCartProductNum(user.getId());
