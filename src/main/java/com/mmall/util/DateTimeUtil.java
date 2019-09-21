@@ -19,7 +19,7 @@ import java.util.Date;
  * @author: HanYu
  * @className: DateTimeUtil
  * @packageName: com.mmall.util
- * @description:
+ * @description: 时间格式转换工具类
  * @data: 2019-09-06 13:23
  **/
 public class DateTimeUtil {

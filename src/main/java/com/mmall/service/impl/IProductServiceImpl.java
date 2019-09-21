@@ -7,8 +7,6 @@
  */
 package com.mmall.service.impl;
 
-import ch.qos.logback.classic.gaffer.PropertyUtil;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mmall.common.Const;
@@ -23,7 +21,7 @@ import com.mmall.service.IProductService;
 import com.mmall.util.DateTimeUtil;
 import com.mmall.util.PropertiesUtil;
 import com.mmall.vo.ProductDetailVo;
-import com.mmall.vo.ProductListVo;
+import com.mmall.vo.ProductGeneralVo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +49,14 @@ public class IProductServiceImpl implements IProductService {
     private ICategoryService iCategoryService;
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: saveOrUpdateProduct
+     * @description: 新增或更新产品
+     * @author: HanYu
+     * @param product
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @Override
     public ServerResponse saveOrUpdateProduct(Product product) {
         if (product != null) {
@@ -59,27 +65,36 @@ public class IProductServiceImpl implements IProductService {
                 if (images.length > 0) {
                     product.setMainImage(images[0]);
                 }
-                if (product.getId() != null) {
-                    int resultCount = productMapper.updateByPrimaryKey(product);
-                    if (resultCount > 0) {
-                        return ServerResponse.createBySuccessMessage("更新产品成功");
-                    } else {
-                        return ServerResponse.createByError("更新产品失败");
-                    }
+            }
+            if (product.getId() != null) {
+                int resultCount = productMapper.updateByPrimaryKey(product);
+                if (resultCount > 0) {
+                    return ServerResponse.createBySuccessMessage("更新产品成功");
                 } else {
-                    int resultCount = productMapper.insert(product);
-                    if (resultCount > 0) {
-                        return ServerResponse.createBySuccessMessage("新增产品成功");
-                    } else {
-                        return ServerResponse.createByError("新增产品失败");
-                    }
+                    return ServerResponse.createByError("更新产品失败");
+                }
+            } else {
+                int resultCount = productMapper.insert(product);
+                if (resultCount > 0) {
+                    return ServerResponse.createBySuccessMessage("新增产品成功");
+                } else {
+                    return ServerResponse.createByError("新增产品失败");
                 }
             }
         }
         return ServerResponse.createByError("新增或更新产品参数不正确");
     }
-    /*---------------------------------------分割线-----------------------------------------**/
 
+    /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: setSaleStatus
+     * @description: 设置产品上下架状态
+     * @author: HanYu
+     * @param productId
+     * @param status
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @Override
     public ServerResponse setSaleStatus(Integer productId, Integer status) {
         if (productId == null || status == null) {
@@ -96,7 +111,14 @@ public class IProductServiceImpl implements IProductService {
         }
     }
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: manageGetProductDetail
+     * @description: 后台获取产品详情,包装为ProductDetailVo
+     * @author: HanYu
+     * @param productId
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.ProductDetailVo>
+     * @throws:
+     */
     @Override
     public ServerResponse<ProductDetailVo> manageGetProductDetail(Integer productId) {
         if (productId == null) {
@@ -104,33 +126,51 @@ public class IProductServiceImpl implements IProductService {
         }
         Product product = productMapper.selectByPrimaryKey(productId);
         if (product == null) {
-            return ServerResponse.createByError("产品已下架或不存在");
+            return ServerResponse.createByError("产品不存在");
         }
         ProductDetailVo productDetailVo = assembleProductDetailVo(product);
         return ServerResponse.createBySuccess(productDetailVo);
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: manageGetProductList
+     * @description: 后台获取产品集合
+     * @author: HanYu
+     * @param pageNum
+     * @param pageSize
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
+     * @throws:
+     */
     @Override
-    public ServerResponse<PageInfo> getProductList(Integer pageNum, Integer pageSize) {
-        //startPage
-        //填充sql
-        //pageHelper收尾
+    public ServerResponse<PageInfo> manageGetProductList(Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Product> products = productMapper.selectList();
-        List<ProductListVo> productListVos = new ArrayList<>();
+        List<ProductGeneralVo> productGeneralVoList = new ArrayList<>();
         for (Product product : products) {
-            ProductListVo productListVo = assembleProductListVo(product);
-            productListVos.add(productListVo);
+            ProductGeneralVo productGeneralVo = assembleProductGeneralVo(product);
+            productGeneralVoList.add(productGeneralVo);
         }
         PageInfo pageInfo = new PageInfo(products);
-        pageInfo.setList(productListVos);
+        pageInfo.setList(productGeneralVoList);
         return ServerResponse.createBySuccess(pageInfo);
     }
     /*---------------------------------------分割线-----------------------------------------**/
 
+    /**
+     * @title: getProductList
+     * @description: 根据查询条件获取产品集合
+     * @author: HanYu
+     * @param keyword
+     * @param categoryId
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
+     * @throws:
+     */
     @Override
-    public ServerResponse<PageInfo> getProductListByKeyword(String keyword, Integer categoryId, Integer pageNum, Integer pageSize, String orderBy) {
+    public ServerResponse<PageInfo> getProductList(String keyword, Integer categoryId, Integer pageNum, Integer pageSize, String orderBy) {
         if (StringUtils.isBlank(keyword) && categoryId == null) {
             return ServerResponse.createByError(ResponseCode.ILLEGAL_ARGUMENT.getCode(), ResponseCode.ILLEGAL_ARGUMENT.getDesc());
         }
@@ -139,9 +179,9 @@ public class IProductServiceImpl implements IProductService {
             Category category = categoryMapper.selectByPrimaryKey(categoryId);
             if (category == null && StringUtils.isBlank(keyword)) {
                 //返回空结果集
-                List<ProductListVo> productListVoList = new ArrayList<>();
+                List<ProductGeneralVo> productGeneralVoList = new ArrayList<>();
                 PageHelper.startPage(pageNum, pageSize);
-                PageInfo pageInfo = new PageInfo(productListVoList);
+                PageInfo pageInfo = new PageInfo(productGeneralVoList);
                 return ServerResponse.createBySuccess(pageInfo);
             }
             categoryIdList = iCategoryService.getChildrenParallelAndDeepCategory(categoryId).getData();
@@ -151,9 +191,9 @@ public class IProductServiceImpl implements IProductService {
         }
         List<Product> products = productMapper.selectListByNameAndCategoryIds(StringUtils.isBlank(keyword) ? null : keyword,
                 categoryIdList.size() == 0 ? null : categoryIdList);
-        List<ProductListVo> productListVoList = new ArrayList<>();
+        List<ProductGeneralVo> productGeneralVoList = new ArrayList<>();
         for (Product product : products) {
-            productListVoList.add(assembleProductListVo(product));
+            productGeneralVoList.add(assembleProductGeneralVo(product));
         }
         //排序处理
         PageHelper.startPage(pageNum, pageSize);
@@ -162,28 +202,48 @@ public class IProductServiceImpl implements IProductService {
             PageHelper.orderBy(strings[0] + " " + strings[1]);
         }
         PageInfo pageInfo = new PageInfo(products);
-        pageInfo.setList(productListVoList);
+        pageInfo.setList(productGeneralVoList);
         return ServerResponse.createBySuccess(pageInfo);
     }
+
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: manageSearchProduct
+     * @description: 产品搜索
+     * @author: HanYu
+     * @param productName
+     * @param productId
+     * @param pageNum
+     * @param pageSize
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
+     * @throws:
+     */
     @Override
-    public ServerResponse<PageInfo> searchProduct(String productName, Integer productId, Integer pageNum, Integer pageSize) {
+    public ServerResponse<PageInfo> manageSearchProduct(String productName, Integer productId, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         if (StringUtils.isNotBlank(productName)) {
             productName = new StringBuilder().append("%").append(productName).append("%").toString();
         }
         List<Product> products = productMapper.selectListByNameAndId(productName, productId);
-        List<ProductListVo> productListVos = new ArrayList<>();
+        List<ProductGeneralVo> productGeneralVoList = new ArrayList<>();
         for (Product product : products) {
-            ProductListVo productListVo = assembleProductListVo(product);
-            productListVos.add(productListVo);
+            ProductGeneralVo productGeneralVo = assembleProductGeneralVo(product);
+            productGeneralVoList.add(productGeneralVo);
         }
         PageInfo pageInfo = new PageInfo(products);
-        pageInfo.setList(productListVos);
+        pageInfo.setList(productGeneralVoList);
         return ServerResponse.createBySuccess(pageInfo);
     }
     /*---------------------------------------分割线-----------------------------------------**/
 
+    /**
+     * @param productId
+     * @title: getProductDetail
+     * @description: 获取产品详情, 包装为ProductDetailVo
+     * @author: HanYu
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.ProductDetailVo>
+     * @throws:
+     */
     @Override
     public ServerResponse<ProductDetailVo> getProductDetail(Integer productId) {
         if (productId == null) {
@@ -201,6 +261,15 @@ public class IProductServiceImpl implements IProductService {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+
+    /**
+     * @param product
+     * @title: assembleProductDetailVo
+     * @description: 组装ProductVo
+     * @author: HanYu
+     * @return: com.mmall.vo.ProductDetailVo
+     * @throws:
+     */
     private ProductDetailVo assembleProductDetailVo(Product product) {
         ProductDetailVo productDetailVo = new ProductDetailVo();
         productDetailVo.setId(product.getId());
@@ -231,8 +300,17 @@ public class IProductServiceImpl implements IProductService {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
-    private ProductListVo assembleProductListVo(Product product) {
-        ProductListVo productListVo = new ProductListVo();
+
+    /**
+     * @param product
+     * @title: assembleProductGeneralVo
+     * @description: 组装ProductGeneralVo
+     * @author: HanYu
+     * @return: com.mmall.vo.ProductGeneralVo
+     * @throws:
+     */
+    private ProductGeneralVo assembleProductGeneralVo(Product product) {
+        ProductGeneralVo productListVo = new ProductGeneralVo();
         productListVo.setId(product.getId());
         productListVo.setSubtitle(product.getSubtitle());
         productListVo.setPrice(product.getPrice());

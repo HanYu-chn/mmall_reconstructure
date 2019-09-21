@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -35,8 +34,8 @@ public class IFileServiceImpl implements IFileService {
     @Override
     public String uplode(MultipartFile file,String path){
         String filename = file.getOriginalFilename();
-        String fileExtensionName = filename.substring(filename.lastIndexOf(".") + 1);
-        String uploadFileName = UUID.randomUUID().toString();
+        String fileExtensionName = filename.substring(filename.lastIndexOf("."));
+        String uploadFileName = UUID.randomUUID().toString() + fileExtensionName;
         logger.info("开始上传文件,上传文件的文件名:{},上传的路径:{},新文件名:{}", filename, path, uploadFileName);
         File fileDirectory = new File(path);
         if (!fileDirectory.exists()) {

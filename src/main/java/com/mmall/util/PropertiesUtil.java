@@ -9,8 +9,13 @@ import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
- * Created by geely
- */
+ * @version: V1.0
+ * @author: HanYu
+ * @className: PropertiesUtil
+ * @packageName: com.mmall.controller.portal
+ * @description: 读取mmall.properties配置文件的工具类
+ * @data: 2019-09-08 19:45
+ **/
 public class PropertiesUtil {
 
     private static Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
@@ -36,14 +41,11 @@ public class PropertiesUtil {
     }
 
     public static String getProperty(String key,String defaultValue){
-
         String value = props.getProperty(key.trim());
         if(StringUtils.isBlank(value)){
             value = defaultValue;
         }
         return value.trim();
     }
-
-
 
 }

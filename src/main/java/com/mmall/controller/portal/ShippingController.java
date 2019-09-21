@@ -38,6 +38,15 @@ public class ShippingController {
     private IShippingService iShippingService;
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: add
+     * @description: 添加收货地址
+     * @author: HanYu
+     * @param session
+     * @param shipping
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @RequestMapping(value = "add.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse add(HttpSession session , Shipping shipping) {
@@ -46,6 +55,15 @@ public class ShippingController {
         return iShippingService.add(user.getId(),shipping);
     }
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: delete
+     * @description: 删除收货地址
+     * @author: HanYu
+     * @param session
+     * @param shippingId
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @RequestMapping(value = "delete.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse delete(HttpSession session , Integer shippingId) {
@@ -54,6 +72,15 @@ public class ShippingController {
         return iShippingService.delete(user.getId(),shippingId);
     }
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: update
+     * @description: 更新收货地址
+     * @author: HanYu
+     * @param session
+     * @param shipping
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @RequestMapping(value = "update.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse update(HttpSession session , Shipping shipping) {
@@ -62,6 +89,15 @@ public class ShippingController {
         return iShippingService.update(user.getId(),shipping);
     }
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: select
+     * @description: 选择收货地址
+     * @author: HanYu
+     * @param session
+     * @param shippingId
+     * @return: com.mmall.common.ServerResponse<com.mmall.pojo.Shipping>
+     * @throws:
+     */
     @RequestMapping(value = "select.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Shipping> select(HttpSession session , Integer shippingId) {
@@ -70,6 +106,16 @@ public class ShippingController {
         return iShippingService.select(user.getId(),shippingId);
     }
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: getList
+     * @description: 获取收货地址集合
+     * @author: HanYu
+     * @param session
+     * @param pageNum
+     * @param pageSize
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
+     * @throws:
+     */
     @RequestMapping(value = "getList.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<PageInfo> getList(HttpSession session ,

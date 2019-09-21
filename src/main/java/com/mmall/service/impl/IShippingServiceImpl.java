@@ -33,18 +33,34 @@ public class IShippingServiceImpl implements IShippingService {
     @Autowired
     private ShippingMapper shippingMapper;
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: add
+     * @description: 添加收货地址
+     * @author: HanYu
+     * @param userId
+     * @param shipping
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @Override
     public ServerResponse add(Integer userId, Shipping shipping) {
         shipping.setUserId(userId);
         int rowCount = shippingMapper.insert(shipping);
-        if(rowCount == 0) return ServerResponse.createByError("添加地址失败");
+        if(rowCount <= 0) return ServerResponse.createByError("添加地址失败");
         Map map = new HashMap();
         map.put("shippingId",shipping.getId());
         return ServerResponse.createBySuccess("添加地址成功",map);
     }
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: update
+     * @description: 更新收货地址
+     * @author: HanYu
+     * @param userId
+     * @param shipping
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @Override
     public ServerResponse update(Integer userId, Shipping shipping) {
         shipping.setUserId(userId);
@@ -53,7 +69,15 @@ public class IShippingServiceImpl implements IShippingService {
         return ServerResponse.createBySuccess("更新地址成功");
     }
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: delete
+     * @description: 删除收货地址
+     * @author: HanYu
+     * @param userId
+     * @param shippingId
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @Override
     public ServerResponse delete(Integer userId, Integer shippingId) {
         int rowCount = shippingMapper.deleteByUserIdShippingId(userId,shippingId);
@@ -61,7 +85,15 @@ public class IShippingServiceImpl implements IShippingService {
         return ServerResponse.createByError("删除地址失败");
     }
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: select
+     * @description: 选择收货地址
+     * @author: HanYu
+     * @param userId
+     * @param shippingId
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @Override
     public ServerResponse select(Integer userId, Integer shippingId) {
         Shipping shipping = shippingMapper.selectByUserIdShippingId(userId, shippingId);
@@ -69,7 +101,16 @@ public class IShippingServiceImpl implements IShippingService {
         return ServerResponse.createBySuccess("查找成功",shipping);
     }
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: getList
+     * @description: 获取收货地址集合
+     * @author: HanYu
+     * @param userId
+     * @param pageNum
+     * @param pageSize
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
+     * @throws:
+     */
     @Override
     public ServerResponse<PageInfo> getList(Integer userId, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum,pageSize);

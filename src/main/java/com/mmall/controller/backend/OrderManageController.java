@@ -1,21 +1,22 @@
 /**
  * projectName: mmall
- * fileName: CategoryManageController.java
+ * fileName: OrderManageController.java
  * packageName: com.mmall.controller.backend
- * date: 2019-09-03 15:50
+ * date: 2019-09-18 20:06
  * copyright(c) HanYu
  */
 package com.mmall.controller.backend;
 
+import com.github.pagehelper.PageInfo;
 import com.mmall.common.Const;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
-import com.mmall.service.ICategoryService;
+import com.mmall.service.IOrderService;
 import com.mmall.service.IUserService;
+import com.mmall.vo.OrderVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,102 +27,106 @@ import javax.servlet.http.HttpSession;
 /**
  * @version: V1.0
  * @author: HanYu
- * @className: CategoryManageController
+ * @className: OrderManageController
  * @packageName: com.mmall.controller.backend
- * @description: CategoryManageController
- * @data: 2019-09-03 15:50
+ * @description:
+ * @data: 2019-09-18 20:06
  **/
 @Controller
-@RequestMapping("/manage/category/")
-public class CategoryManageController {
+@RequestMapping("/manage/order/")
+public class OrderManageController {
     @Autowired
     private IUserService iUserService;
 
     @Autowired
-    private ICategoryService iCategoryService;
-
+    private IOrderService iOrderService;
     /*---------------------------------------分割线-----------------------------------------**/
     /**
-     * @title: addCategory
-     * @description: 添加分类
+     * @title: list
+     * @description: 管理员获取全部订单详情
      * @author: HanYu
      * @param session
-     * @param categoryName
-     * @param parentId
-     * @return: com.mmall.common.ServerResponse
+     * @param pageSize
+     * @param pageNum
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
      * @throws:
      */
-    @RequestMapping(value = "addCategory.do", method = RequestMethod.POST)
+    @RequestMapping(value = "list.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse addCategory(HttpSession session, String categoryName, @RequestParam(value = "parentId", defaultValue = "0") int parentId) {
+    public ServerResponse<PageInfo> list(HttpSession session,
+                                         @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+                                         @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            return iCategoryService.addCategory(categoryName, parentId);
+            return iOrderService.getListManage(pageSize, pageNum);
         } else {
             return ServerResponse.createByError("无权限操作,需要管理员权限");
         }
     }
     /*---------------------------------------分割线-----------------------------------------**/
     /**
-     * @title: updateCategoryName
-     * @description: 更新分类名称
+     * @title: detail
+     * @description: 获取订单详情
      * @author: HanYu
      * @param session
-     * @param categoryName
-     * @param categoryId
-     * @return: com.mmall.common.ServerResponse
+     * @param orderNo
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.OrderVo>
      * @throws:
      */
-    @RequestMapping(value = "updateCategoryName.do", method = RequestMethod.POST)
+    @RequestMapping(value = "detail.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse updateCategoryName(HttpSession session, String categoryName, int categoryId) {
+    public ServerResponse<OrderVo> detail(HttpSession session, Long orderNo) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            return iCategoryService.updateCategoryName(categoryName, categoryId);
+            return iOrderService.getDetailManage(orderNo);
         } else {
             return ServerResponse.createByError("无权限操作,需要管理员权限");
         }
     }
     /*---------------------------------------分割线-----------------------------------------**/
     /**
-     * @title: getChildrenParallelCategory
-     * @description: 获取平级子分类
+     * @title: search
+     * @description: TODO 搜寻订单(扩展功能待写)
      * @author: HanYu
      * @param session
-     * @param categoryId
-     * @return: com.mmall.common.ServerResponse
+     * @param orderNo
+     * @param pageSize
+     * @param pageNum
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
      * @throws:
      */
-    @RequestMapping(value = "getChildrenParallelCategory.do", method = RequestMethod.POST)
+    @RequestMapping(value = "search.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse getChildrenParallelCategory(HttpSession session, @RequestParam(value = "categoryId" ,defaultValue = "0") int categoryId) {
+    public ServerResponse<PageInfo> search(HttpSession session, Long orderNo,
+                                          @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize,
+                                          @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            return iCategoryService.getChildrenParallelCategory(categoryId);
+            return iOrderService.searchManage(orderNo,pageSize,pageNum);
         } else {
             return ServerResponse.createByError("无权限操作,需要管理员权限");
         }
     }
     /*---------------------------------------分割线-----------------------------------------**/
     /**
-     * @title: getChildrenParallelAndDeepCategory
-     * @description: 获取其所有子分类的ID
+     * @title: sendGoods
+     * @description: 订单发货
      * @author: HanYu
      * @param session
-     * @param categoryId
-     * @return: com.mmall.common.ServerResponse
+     * @param orderNo
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
      * @throws:
      */
-    @RequestMapping(value = "getChildrenParallelAndDeepCategory.do", method = RequestMethod.POST)
+    @RequestMapping(value = "sendGoods.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse getChildrenParallelAndDeepCategory(HttpSession session, @RequestParam(value = "categoryId" ,defaultValue = "0") int categoryId) {
+    public ServerResponse<String> sendGoods(HttpSession session, Long orderNo) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            return iCategoryService.getChildrenParallelAndDeepCategory(categoryId);
+            return iOrderService.sendGoodsManage(orderNo);
         } else {
             return ServerResponse.createByError("无权限操作,需要管理员权限");
         }

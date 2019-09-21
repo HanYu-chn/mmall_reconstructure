@@ -36,6 +36,14 @@ public class CartController {
     private ICartService iCartService;
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: getList
+     * @description: 获取购物车内的记录集合,包装成CartVo
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "getList.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> getList(HttpSession session) {
@@ -43,8 +51,34 @@ public class CartController {
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         return iCartService.getList(user.getId());
     }
+    /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: getCartProductList
+     * @description: 获取购物车内选中的商品详情
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
+    @RequestMapping(value = "getCartCheckedProductList.do", method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse getCartCheckedProductList(HttpSession session) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
+        return iCartService.getCartCheckedProductList(user.getId());
+    }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: add
+     * @description: 添加商品至购物车,并返回购物车详情
+     * @author: HanYu
+     * @param session
+     * @param productId
+     * @param count
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "add.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> add(HttpSession session, Integer productId, Integer count) {
@@ -54,6 +88,16 @@ public class CartController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: add
+     * @description: 更新购物车中商品数量,并返回购物车详情
+     * @author: HanYu
+     * @param session
+     * @param productId
+     * @param count
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "update.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> update(HttpSession session, Integer productId, Integer count) {
@@ -63,6 +107,15 @@ public class CartController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: delete
+     * @description: 删除购物车中商品,并返回购物车详情
+     * @author: HanYu
+     * @param session
+     * @param productIds 删除商品ID,与前端约定传值形式   "1,2,3"
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "delete.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> delete(HttpSession session, String productIds) {
@@ -72,6 +125,14 @@ public class CartController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: selectAll
+     * @description: 购物车全选操作
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "selectAll.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> selectAll(HttpSession session) {
@@ -81,6 +142,14 @@ public class CartController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: selectAll
+     * @description: 购物车全不选操作
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "unSelectAll.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> unSelectAll(HttpSession session) {
@@ -90,6 +159,15 @@ public class CartController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: selectOne
+     * @description: 购物车对一个商品进行选择操作
+     * @author: HanYu
+     * @param session
+     * @param productId
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "selectOne.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> selectOne(HttpSession session, Integer productId) {
@@ -100,6 +178,15 @@ public class CartController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: selectOne
+     * @description: 购物车对一个商品进行取消选择操作
+     * @author: HanYu
+     * @param session
+     * @param productId
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.CartVo>
+     * @throws:
+     */
     @RequestMapping(value = "unSelectOne.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<CartVo> unSelectOne(HttpSession session, Integer productId) {
@@ -110,6 +197,14 @@ public class CartController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: getCartProductNum
+     * @description: 获取购物车中商品总数
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<java.lang.Integer>
+     * @throws:
+     */
     @RequestMapping(value = "getCartProductNum.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<Integer> getCartProductNum(HttpSession session) {

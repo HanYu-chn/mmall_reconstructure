@@ -3,8 +3,13 @@ package com.mmall.vo;
 import java.math.BigDecimal;
 
 /**
- * Created by geely
- */
+ * @version: V1.0
+ * @author: HanYu
+ * @className: CartProductVo
+ * @packageName: com.mmall.vo
+ * @description: 购物车中商品包装类
+ * @data: 2019-09-08 18:34
+ **/
 public class CartProductVo {
 
 //结合了产品和购物车的一个抽象对象

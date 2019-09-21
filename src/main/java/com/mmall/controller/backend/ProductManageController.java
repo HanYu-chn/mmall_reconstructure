@@ -55,7 +55,15 @@ public class ProductManageController {
     @Autowired
     private IFileService iFileService;
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: productSave
+     * @description: 新增或更新产品
+     * @author: HanYu
+     * @param session
+     * @param product
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @RequestMapping(value = "productSave.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse productSave(HttpSession session, Product product) {
@@ -68,7 +76,16 @@ public class ProductManageController {
         }
     }
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: setSaleStatus
+     * @description: 后台设置产品上下架状态
+     * @author: HanYu
+     * @param session
+     * @param productId
+     * @param productStatus
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @RequestMapping(value = "setSaleStatus.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse setSaleStatus(HttpSession session, Integer productId, Integer productStatus) {
@@ -81,7 +98,15 @@ public class ProductManageController {
         }
     }
     /*---------------------------------------分割线-----------------------------------------**/
-
+    /**
+     * @title: getDetail
+     * @description: 后台获取产品详情,包装为ProductDetailVo
+     * @author: HanYu
+     * @param session
+     * @param productId
+     * @return: com.mmall.common.ServerResponse<com.mmall.vo.ProductDetailVo>
+     * @throws:
+     */
     @RequestMapping(value = "getDetail.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<ProductDetailVo> getDetail(HttpSession session, Integer productId) {
@@ -95,39 +120,74 @@ public class ProductManageController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: getList
+     * @description: 后台获取产品集合
+     * @author: HanYu
+     * @param session
+     * @param pageNum
+     * @param pageSize
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
+     * @throws:
+     */
     @RequestMapping(value = "getList.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<PageInfo> getList(HttpSession session, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+    public ServerResponse<PageInfo> getList(HttpSession session,
+                                            @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                                            @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            return iProductService.getProductList(pageNum, pageSize);
+            return iProductService.manageGetProductList(pageNum, pageSize);
         } else {
             return ServerResponse.createByError("无权限操作,需要管理员权限");
         }
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: productSearch
+     * @description: 产品搜索
+     * @author: HanYu
+     * @param session
+     * @param productName
+     * @param productId
+     * @param pageNum
+     * @param pageSize
+     * @return: com.mmall.common.ServerResponse<com.github.pagehelper.PageInfo>
+     * @throws:
+     */
     @RequestMapping(value = "productSearch.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<PageInfo> productSearch(HttpSession session, String productName, Integer productId, @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum, @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
+    public ServerResponse<PageInfo> productSearch(HttpSession session, String productName, Integer productId,
+                                                  @RequestParam(value = "pageNum", defaultValue = "1") Integer pageNum,
+                                                  @RequestParam(value = "pageSize", defaultValue = "10") Integer pageSize) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            return iProductService.searchProduct(productName, productId, pageNum, pageSize);
+            return iProductService.manageSearchProduct(productName, productId, pageNum, pageSize);
         } else {
             return ServerResponse.createByError("无权限操作,需要管理员权限");
         }
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: uplodeFile
+     * @description: 图片上传
+     * @author: HanYu
+     * @param session
+     * @param file
+     * @return: com.mmall.common.ServerResponse
+     * @throws:
+     */
     @RequestMapping(value = "uplodeFile.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse uplodeFile(HttpSession session,@RequestParam("uploadFile") MultipartFile file, HttpServletRequest request) {
+    public ServerResponse uplodeFile(HttpSession session, @RequestParam("uploadFile") MultipartFile file) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) return ServerResponse.createByError(ResponseCode.NEED_LOGIN.getCode(), "用户未登录,请登录");
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            String path = request.getSession().getServletContext().getRealPath("upload");
+            String path = session.getServletContext().getRealPath("upload");
             String fileName = iFileService.uplode(file, path);
             String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + fileName;
             Map map = Maps.newHashMap();
@@ -139,9 +199,19 @@ public class ProductManageController {
         }
     }
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: richTextImgUpload
+     * @description: 富文本上传图片
+     * @author: HanYu
+     * @param session
+     * @param file
+     * @param response
+     * @return: java.util.Map
+     * @throws:
+     */
     @RequestMapping(value = "richTextImgUpload.do", method = RequestMethod.POST)
     @ResponseBody
-    public Map richTextImgUpload(HttpSession session,@RequestParam("uploadFile") MultipartFile file, HttpServletRequest request , HttpServletResponse response) {
+    public Map richTextImgUpload(HttpSession session,@RequestParam("uploadFile") MultipartFile file,HttpServletResponse response) {
         Map resultMap = new HashMap();
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if (user == null) {
@@ -150,7 +220,7 @@ public class ProductManageController {
             return resultMap;
         }
         if (iUserService.checkAdminRole(user).isSuccess()) {
-            String path = request.getSession().getServletContext().getRealPath("upload");
+            String path = session.getServletContext().getRealPath("upload");
             String fileName = iFileService.uplode(file, path);
             if (StringUtils.isBlank(fileName)) {
                 resultMap.put("success", false);

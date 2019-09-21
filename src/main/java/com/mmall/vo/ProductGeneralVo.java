@@ -13,12 +13,12 @@ import java.util.Date;
 /**
  * @version: V1.0
  * @author: HanYu
- * @className: ProductListVo
+ * @className: ProductGeneralVo
  * @packageName: com.mmall.vo
  * @description:
  * @data: 2019-09-06 14:27
  **/
-public class ProductListVo {
+public class ProductGeneralVo {
     private Integer id;
 
     private Integer categoryId;

@@ -18,5 +18,5 @@ import org.springframework.web.multipart.MultipartFile;
  * @data: 2019-09-06 16:08
  **/
 public interface IFileService {
-    public String uplode(MultipartFile file, String path);
+    String uplode(MultipartFile file, String path);
 }

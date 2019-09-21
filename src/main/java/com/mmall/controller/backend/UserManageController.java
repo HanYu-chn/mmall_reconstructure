@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
  * @author: HanYu
  * @className: UserManageController
  * @packageName: com.mmall.controller.backend
- * @description: 后台管理Controller
+ * @description: UserManageController
  * @data: 2019-09-02 18:01
  **/
 @Controller
@@ -34,6 +34,16 @@ public class UserManageController {
     private IUserService iUserService;
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: login
+     * @description: 管理员登录
+     * @author: HanYu
+     * @param userName
+     * @param password
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.pojo.User>
+     * @throws:
+     */
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> login(String userName, String password, HttpSession session) {

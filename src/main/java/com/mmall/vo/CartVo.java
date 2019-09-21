@@ -4,8 +4,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Created by geely
- */
+ * @version: V1.0
+ * @author: HanYu
+ * @className: CartVo
+ * @packageName: com.mmall.vo
+ * @description: 购物车类
+ * @data: 2019-09-08 18:34
+ **/
 public class CartVo {
 
     private List<CartProductVo> cartProductVoList;

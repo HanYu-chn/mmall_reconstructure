@@ -35,16 +35,16 @@ public class UserController {
     @Autowired
     private IUserService iUserService;
     /*---------------------------------------分割线-----------------------------------------**/
-
     /**
-     * @param username 用户名
-     * @param password 密码
-     * @param session
      * @title: login
      * @description: 用户登录
-     * @author: YH
-     * @date: 2019-08-18 15:11
-     * @return: java.lang.Object
+     * @author: HanYu
+     * @param username
+     * @param password
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.pojo.User>
+     *          若成功登录,则返回带有该用户详情的serverResponse,
+     *          若失败,则返回状态码为ERROR的serverResponse.
      * @throws:
      */
     @RequestMapping(value = "login.do", method = RequestMethod.POST)
@@ -58,6 +58,14 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: logout
+     * @description: 用户退出登录
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
+     * @throws:
+     */
     @RequestMapping(value = "logout.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> logout(HttpSession session) {
@@ -66,6 +74,14 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: register
+     * @description: 用户注册
+     * @author: HanYu
+     * @param user
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
+     * @throws:
+     */
     @RequestMapping(value = "register.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> register(User user) {
@@ -73,6 +89,15 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: checkValid
+     * @description: 验证value是否有效
+     * @author: HanYu
+     * @param str  用户名或邮箱
+     * @param type   "userName" 或 "email"
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
+     * @throws:
+     */
     @RequestMapping(value = "checkValid.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> checkValid(String str, String type) {
@@ -80,6 +105,14 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: getUserInfo
+     * @description: 获取用户信息
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.pojo.User>
+     * @throws:
+     */
     @RequestMapping(value = "getUserInfo.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> getUserInfo(HttpSession session) {
@@ -91,6 +124,14 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: forgetGetQuestion
+     * @description: 根据用户名获取密码提示问题
+     * @author: HanYu
+     * @param username
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
+     * @throws:
+     */
     @RequestMapping(value = "forgetGetQuestion.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> forgetGetQuestion(String username) {
@@ -98,6 +139,16 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: forgetCheckAnswer
+     * @description: 检查忘记密码时回答问题的答案
+     * @author: HanYu
+     * @param userName
+     * @param question
+     * @param answer
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
+     * @throws:
+     */
     @RequestMapping(value = "forgetCheckAnswer.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> forgetCheckAnswer(String userName, String question, String answer) {
@@ -105,6 +156,16 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
+    /**
+     * @title: forgetResetPassword
+     * @description: 通过问题提示方式重置密码
+     * @author: HanYu
+     * @param userName
+     * @param passwordNew
+     * @param token
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
+     * @throws:
+     */
     @RequestMapping(value = "forgetResetPassword.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> forgetResetPassword(String userName, String passwordNew, String token) {
@@ -112,7 +173,16 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
-    //登录状态中重置密码
+    /**
+     * @title: resetPassword
+     * @description: 登录状态下重置密码
+     * @author: HanYu
+     * @param session
+     * @param passwordNew
+     * @param passwordOld
+     * @return: com.mmall.common.ServerResponse<java.lang.String>
+     * @throws:
+     */
     @RequestMapping(value = "resetPassword.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<String> resetPassword(HttpSession session, String passwordNew, String passwordOld) {
@@ -124,7 +194,15 @@ public class UserController {
     }
 
     /*---------------------------------------分割线-----------------------------------------**/
-    //登录状态更新个人信息
+    /**
+     * @title: updateUserInfo
+     * @description: 登录状态下更新个人信息
+     * @author: HanYu
+     * @param session
+     * @param user
+     * @return: com.mmall.common.ServerResponse<com.mmall.pojo.User>
+     * @throws:
+     */
     @RequestMapping(value = "updateUserInfo.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> updateUserInfo(HttpSession session, User user) {
@@ -132,6 +210,7 @@ public class UserController {
         if (currentUser == null) {
             return ServerResponse.createByError("用户未登录");
         }
+        //防止横向越权
         user.setId(currentUser.getId());
         user.setUsername(currentUser.getUsername());
         ServerResponse<User> response = iUserService.updateUserInfo(user);
@@ -141,7 +220,14 @@ public class UserController {
         return response;
     }
     /*---------------------------------------分割线-----------------------------------------**/
-    //获取当前登录用户的详细信息，并强制登录
+    /**
+     * @title: getInformation
+     * @description: 获取当前登录用户的详细信息，未登录则强制登录
+     * @author: HanYu
+     * @param session
+     * @return: com.mmall.common.ServerResponse<com.mmall.pojo.User>
+     * @throws:
+     */
     @RequestMapping(value = "getInformation.do", method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> getInformation(HttpSession session) {
